@@ -8,11 +8,11 @@
 ;(regexp-opt '("var" "if" "then" "elsif" "else" "endif" "end" "while"
 ;	      "loop" "endloop" "proc" "return" "module" "modspec"
 ;	      "import" "as" "open" "export" "private" "type" "struct"
-;	      "mut"))
+;	      "mut" "case" "of" "endcase" "begin" "is") 'symbols)
 
 (defconst dill-font-lock-keywords-1
   (list
-   '("\\<\\(?:as\\|e\\(?:ls\\(?:e\\|if\\)\\|nd\\(?:if\\|loop\\)?\\|xport\\)\\|i\\(?:f\\|mport\\)\\|loop\\|m\\(?:od\\(?:spec\\|ule\\)\\|ut\\)\\|open\\|pr\\(?:ivate\\|oc\\)\\|return\\|struct\\|t\\(?:hen\\|ype\\)\\|var\\|while\\)\\>" . font-lock-builtin-face))
+   '("\\_<\\(as\\|begin\\|case\\|e\\(?:ls\\(?:e\\|if\\)\\|nd\\(?:case\\|if\\|loop\\)?\\|xport\\)\\|i\\(?:mport\\|[fs]\\)\\|loop\\|m\\(?:od\\(?:spec\\|ule\\)\\|ut\\)\\|o\\(?:f\\|pen\\)\\|pr\\(?:ivate\\|oc\\)\\|return\\|struct\\|t\\(?:hen\\|ype\\)\\|var\\|while\\)\\_>" . font-lock-builtin-face))
   "Keyword highlighting expressions for dill-mode")
 
 (defvar dill-font-lock-keywords dill-font-lock-keywords-1
