@@ -80,7 +80,7 @@
 
 
 (defun dill-mode ()
-  "Major mode for editing Workflow Process Description Language files"
+  "Major mode for editing Dill programming language source files"
   (interactive)
   (kill-all-local-variables)
   (set-syntax-table dill-mode-syntax-table)
