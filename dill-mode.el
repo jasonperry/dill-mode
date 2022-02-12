@@ -8,10 +8,10 @@
 ;(regexp-opt '("var" "if" "then" "elsif" "else" "endif" "begin" "end" "while"
 ;	      "loop" "endwhile" "proc" "return" "module" "modspec"
 ;	      "import" "as" "open" "export" "private" "type" "is" "struct"
-;	      "variant" "mut"))
+;	      "variant" "mut") 'symbols) ; 'symbols makes the angle brackets
 
 (defconst dill-font-lock-keywords-1
-  (list ; the angle brackets aren't given, why did I add them?
+  (list
    '(
      "\\<\\(?:as\\|begin\\|e\\(?:ls\\(?:e\\|if\\)\\|nd\\(?:if\\|while\\)?\\|xport\\)\\|i\\(?:mport\\|[fs]\\)\\|loop\\|m\\(?:od\\(?:spec\\|ule\\)\\|ut\\)\\|open\\|pr\\(?:ivate\\|oc\\)\\|return\\|struct\\|t\\(?:hen\\|ype\\)\\|var\\(?:iant\\)?\\|while\\)\\>"
      . font-lock-builtin-face))
@@ -47,6 +47,7 @@
 	(save-excursion
 	  ;; do we really need a loop? Can't we just look one behind and
 	  ;; keep it the same? We have to look past blank lines at least
+	  ;; TODO: detect comment as well 
 	  (while not-indented
 	    (forward-line -1)
 	    ;; if previous line has an ending keyword, keep current indentation
