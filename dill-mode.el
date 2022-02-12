@@ -41,12 +41,26 @@
       (indent-line-to 0)
     (let ((not-indented t)
 	  cur-indent)
-      ;; unindent a line with "end" something - need special case for case--of
-      (if (looking-at "^[ \t]*\\(else\\|elsif\\|endif\\|endwhile\\|endcase\\|end \\)")
+      ;; 'case' is a special case, because the top line doesn't end with a
+      ;; keyword, and the 'of' blocks are indented relative to the 'case'
+      ;; (unlike elsif/else blocks).
+      ;; could I just punt and have the "of" blocks not be indented?
+      ;; that's actually an OK idea, it's the same as function begins.
+      ;; ...and it avoids special handling with 'endcase' also.
+      ;; oh no, wait. the first 'of' should be different...unless
+      ;; ...unless i indent because of "case", then unindent! Yeah!
+      ;; ...but the code structure doesn't handle multiple indents.
+      ;; OK, so say I did a special case just for "of"
+      
+      ;; unindent a line that ends /or ends and starts/ a block.
+      (if (looking-at "^[ \t]*\\(else\\|elsif\\|endif\\|endwhile\\|of \\|endcase\\|end \\)")
 	  (progn
             (save-excursion
               (forward-line -1)
-              (setq cur-indent (- (current-indentation) tab-width)))
+	      ;; special case: don't unindent first "of" inside a case block.
+	      (if (looking-at "^[ \t]*case")
+		  (setq cur-indent (current-indentation))
+		(setq cur-indent (- (current-indentation) tab-width))))
 	    (if (< cur-indent 0)
 		(setq cur-indent 0)))
 	;; look-behind cases.
@@ -54,16 +68,16 @@
 	  (while not-indented
 	    (forward-line -1)
 	    ;; if previous line has an ending keyword, keep current indentation
+	    ;; ...do I even need this if that's the default?
 	    (if (looking-at "^[ \t]*\\(endif\\|endwhile\\|endcase\\|end \\)")
                 (progn
                   (setq cur-indent (current-indentation))
                   (setq not-indented nil))
               ;; After a block-starting line, indent further
-	      ;; is the anything glob at start better than looking-back?
-	      ;; note that 'case' lines have no ending keyword.
+	      ;; is the .* at start of line better than looking-back?
 	      ;; This won't work if a comment is after. Could quick-fix that...
               (if (looking-at
-		   "\\([ \t]*case \\|.*\\(begin\\|then\\|else\\|elsif\\|struct\\|variant\\|loop\\)[ \t]*$\\)")
+		   ".*\\(begin\\|then\\|else\\|elsif\\|struct\\|variant\\|loop\\)[ \t]*$")
                   (progn
                     (setq cur-indent (+ (current-indentation) tab-width))
                     (setq not-indented nil))
