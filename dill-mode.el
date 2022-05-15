@@ -25,9 +25,13 @@
 ;; word following "Type" or a colon is a type, and also the end keyword
 (defvar dill-mode-syntax-table
   (let ((st (make-syntax-table)))
-    (modify-syntax-entry ?\( "()1n" st)
-    (modify-syntax-entry ?\) ")(4n" st)
-    (modify-syntax-entry ?* ". 23n" st)
+;;;    (modify-syntax-entry ?\( "()1n" st)
+;;;    (modify-syntax-entry ?\) ")(4n" st)
+;;;    (modify-syntax-entry ?* ". 23n" st)
+    (modify-syntax-entry ?\( "()1nb" st)
+    (modify-syntax-entry ?\) ")(4nb" st)
+    (modify-syntax-entry ?*  "_ 123" st) ; doesn't need the b?
+    (modify-syntax-entry ?\n ">" st)
     st)
   "Syntax table for dill-mode")
 
@@ -50,7 +54,8 @@
       ;; oh no, wait. the first 'of' should be different...unless
       ;; ...unless i indent because of "case", then unindent! Yeah!
       ;; ...but the code structure doesn't handle multiple indents.
-      ;; OK, so say I did a special case just for "of"
+      ;; conclusion: now 'of' is not indented relative to case, and
+      ;;   there is a quick check if the previous line is 'case'.
       
       ;; unindent a line that ends /or ends and starts/ a block.
       (if (looking-at "^[ \t]*\\(else\\|elsif\\|endif\\|endwhile\\|of \\|endcase\\|end \\)")
@@ -78,6 +83,7 @@
 	      ;; This won't work if a comment is after. Could quick-fix that...
               (if (looking-at
 		   ".*\\(begin\\|then\\|else\\|elsif\\|struct\\|variant\\|loop\\)[ \t]*$")
+		  ;; TODO: don't indent if it's a module begin
                   (progn
                     (setq cur-indent (+ (current-indentation) tab-width))
                     (setq not-indented nil))
