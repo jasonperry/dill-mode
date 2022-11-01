@@ -16,11 +16,22 @@
   (list
    '(
      "\\_<\\(as\\|begin\\|case\\|e\\(?:ls\\(?:e\\|if\\)\\|nd\\(?:case\\|if\\|while\\)?\\|xport\\)\\|i\\(?:mport\\|[fs]\\)\\|loop\\|m\\(?:od\\(?:spec\\|ule\\)\\|ut\\)\\|o\\(?:f\\|pen\\)\\|pr\\(?:ivate\\|oc\\)\\|return\\|struct\\|t\\(?:hen\\|ype\\)\\|var\\(?:iant\\)?\\|while\\)\\_>"
-     . font-lock-builtin-face))
-  "Keyword highlighting expressions for dill-mode")
+     . font-lock-keyword-face))
+  "Keyword highlighting expressions for Dill")
 
-(defvar dill-font-lock-keywords dill-font-lock-keywords-1
-  "Default highlighting expressions for WPDL mode")
+
+;; will this work in the middle of a word?
+(defconst dill-font-lock-keywords-2
+  (append dill-font-lock-keywords-1
+	  (list 
+	   '("\\<\\([A-Z][a-zA-Z0-9_]*\\)" . font-lock-builtin-face)))
+  "Highlighting for keywords and type names"
+  )
+
+;; trying to do only types but it's not working
+(defvar dill-font-lock-keywords dill-font-lock-keywords-2
+  "Highlighting expression for dill-mode")
+
 
 ;; word following "Type" or a colon is a type, and also the end keyword
 (defvar dill-mode-syntax-table
@@ -28,7 +39,7 @@
 ;;;    (modify-syntax-entry ?\( "()1n" st)
 ;;;    (modify-syntax-entry ?\) ")(4n" st)
 ;;;    (modify-syntax-entry ?* ". 23n" st)
-    (modify-syntax-entry ?\( "()1nb" st)
+    (modify-syntax-entry ?\( "()1nb" st) ; nested is type b
     (modify-syntax-entry ?\) ")(4nb" st)
     (modify-syntax-entry ?*  "_ 123" st) ; doesn't need the b?
     (modify-syntax-entry ?\n ">" st)
@@ -106,7 +117,7 @@
   (set-syntax-table dill-mode-syntax-table)
   ;;(use-local-map wpdl-mode-map)
   (set (make-local-variable 'font-lock-defaults) '(dill-font-lock-keywords))
-  ;;   (set (make-local-variable 'indent-line-function) 'dill-indent-line)
+  ;;;(set (make-local-variable 'font-lock-defaults) '(dill-font-locks))
   (setq indent-tabs-mode nil)
   (setq tab-width 3)
   (set (make-local-variable 'indent-line-function) 'dill-indent-line)
