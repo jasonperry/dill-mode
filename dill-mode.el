@@ -6,16 +6,17 @@
 (add-to-list 'auto-mode-alist '("\\.dms\\'" . dill-mode))
 
 ;; For the developer, to generate the regex string ahead-of-time
-;(regexp-opt '("var" "if" "then" "elsif" "else" "endif" "begin" "end" "while"
-;	       "loop" "endwhile" "case" "of" "endcase" "proc" "return"
-;              "module" "modspec" "import" "as" "open" "export"
-;              "private" "type" "is" "struct" "variant" "mut")
-; 'symbols) ; 'symbols makes the angle brackets
+;;;(regexp-opt '("var" "if" "then" "elsif" "else" "/if" "while"
+;;;    	         "/while" "case" "of" "/case" "proc" "/proc" "return"
+;;;              "module" "/module" "modspec" "/modspec" "do" "is"
+;;;              "import" "as" "open" "private" "type" "record" "variant"
+;;;              "mut")
+;;; 'symbols) ; 'symbols makes the angle brackets
 
 (defconst dill-font-lock-keywords-1
   (list
    '(
-     "\\_<\\(as\\|begin\\|case\\|e\\(?:ls\\(?:e\\|if\\)\\|nd\\(?:case\\|if\\|while\\)?\\|xport\\)\\|i\\(?:mport\\|[fs]\\)\\|loop\\|m\\(?:od\\(?:spec\\|ule\\)\\|ut\\)\\|o\\(?:f\\|pen\\)\\|pr\\(?:ivate\\|oc\\)\\|return\\|struct\\|t\\(?:hen\\|ype\\)\\|var\\(?:iant\\)?\\|while\\)\\_>"
+     "\\_<\\(/\\(?:case\\|if\\|mod\\(?:spec\\|ule\\)\\|proc\\|while\\)\\|as\\|case\\|do\\|els\\(?:e\\|if\\)\\|i\\(?:mport\\|[fs]\\)\\|m\\(?:od\\(?:spec\\|ule\\)\\|ut\\)\\|o\\(?:f\\|pen\\)\\|pr\\(?:ivate\\|oc\\)\\|re\\(?:cord\\|turn\\)\\|t\\(?:hen\\|ype\\)\\|var\\(?:iant\\)?\\|while\\)\\_>"
      . font-lock-keyword-face))
   "Keyword highlighting expressions for Dill")
 
@@ -69,7 +70,7 @@
       ;;   there is a quick check if the previous line is 'case'.
       
       ;; unindent a line that ends /or ends and starts/ a block.
-      (if (looking-at "^[ \t]*\\(else\\|elsif\\|endif\\|endwhile\\|of \\|endcase\\|end \\)")
+      (if (looking-at "^[ \t]*\\(else\\|elsif\\|of \\|/if\\|/while\\|/case\\|/proc\\|/module\\|/modspec\\)")
 	  (progn
             (save-excursion
               (forward-line -1)
@@ -85,7 +86,7 @@
 	    (forward-line -1)
 	    ;; if previous line has an ending keyword, keep current indentation
 	    ;; ...do I even need this if that's the default?
-	    (if (looking-at "^[ \t]*\\(endif\\|endwhile\\|endcase\\|end \\)")
+	    (if (looking-at "^[ \t]*\\(/module\\|/modspec\\|/proc\\|/if\\|/while\\|/case\\|/type\\)")
                 (progn
                   (setq cur-indent (current-indentation))
                   (setq not-indented nil))
@@ -93,7 +94,7 @@
 	      ;; is the .* at start of line better than looking-back?
 	      ;; This won't work if a comment is after. Could quick-fix that...
               (if (looking-at
-		   ".*\\(begin\\|then\\|else\\|elsif\\|struct\\|variant\\|loop\\)[ \t]*$")
+		   ".*\\(do\\|then\\|else\\|elsif\\|record\\|variant\\)[ \t]*$")
 		  ;; TODO: don't indent if it's a module begin
                   (progn
                     (setq cur-indent (+ (current-indentation) tab-width))
